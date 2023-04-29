@@ -1,15 +1,12 @@
 package com.sparta.myblog.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.myblog.dto.ReplyRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
-@Setter
 @Entity
 @NoArgsConstructor
 public class Reply extends Timestamped {
@@ -21,18 +18,18 @@ public class Reply extends Timestamped {
     private String contents;
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public Reply(ReplyRequestDto requestDto, Users user, Post post) {
+    public Reply(ReplyRequestDto requestDto, User user, Post post) {
         this.contents = requestDto.getContents();
         this.user = user;
         this.post = post;
     }
 
-    public void update(ReplyRequestDto requestDto, Users user){
+    public void update(ReplyRequestDto requestDto, User user){
         this.contents = requestDto.getContents();
         this.user = user;
     }

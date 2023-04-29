@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -20,7 +18,7 @@ public class PostResponseDto {
     private String contents;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private List<ReplyResponseDto> replyList = new ArrayList<>();
+    private List<Reply> replyList = new ArrayList<>();
 
     public PostResponseDto(Post post){
         this.id = post.getId();
@@ -29,10 +27,6 @@ public class PostResponseDto {
         this.contents = post.getContents();
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
-        this.replyList = post.getReplyList()
-                .stream()
-                .sorted(Comparator.comparing(Reply::getCreatedAt).reversed())
-                .map(ReplyResponseDto::new)
-                .collect(Collectors.toList());
+        this.replyList = post.getReplyList();
     }
 }

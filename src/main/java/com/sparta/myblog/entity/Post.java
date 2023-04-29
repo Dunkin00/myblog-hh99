@@ -23,12 +23,13 @@ public class Post extends Timestamped {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    @OrderBy("createdAt desc")
     private List<Reply> replyList = new ArrayList<>();
 
-    public Post(PostRequestDto requestDto, Users user) {
+    public Post(PostRequestDto requestDto, User user) {
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
         this.user = user;

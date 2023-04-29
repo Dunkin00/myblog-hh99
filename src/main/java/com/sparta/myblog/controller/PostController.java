@@ -3,12 +3,12 @@ package com.sparta.myblog.controller;
 import com.sparta.myblog.dto.MessageDto;
 import com.sparta.myblog.dto.PostRequestDto;
 import com.sparta.myblog.dto.PostResponseDto;
+import com.sparta.myblog.security.UserDetailsImpl;
 import com.sparta.myblog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -25,26 +25,26 @@ public class PostController {
     }
 
     //선택한 게시글 조회
-    @GetMapping("/post/{id}")
+    @GetMapping("/posts/{id}")
     public PostResponseDto getPost(@PathVariable Long id){
         return postService.getPost(id);
     }
 
     //게시글 등록
-    @PostMapping("/post")
-    public PostResponseDto createPost(@RequestBody PostRequestDto requestDto, HttpServletRequest request) {
-        return postService.createPost(requestDto, request);
+    @PostMapping("/posts")
+    public PostResponseDto createPost(@RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.createPost(requestDto, userDetails.getUser());
     }
 
     //게시글 수정
-    @PutMapping("/post/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, HttpServletRequest request){
-        return postService.update(id, requestDto, request);
+    @PutMapping("/posts/{id}")
+    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.update(id, requestDto, userDetails.getUser());
     }
 
     //게시글 삭제
-    @DeleteMapping("/post/{id}")
-    public ResponseEntity<MessageDto> deletePost(@PathVariable Long id, HttpServletRequest request){
-        return postService.deletePost(id, request);
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity<MessageDto> deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.deletePost(id, userDetails.getUser());
     }
 }

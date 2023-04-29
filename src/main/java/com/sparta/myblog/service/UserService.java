@@ -5,7 +5,7 @@ import com.sparta.myblog.dto.MessageDto;
 import com.sparta.myblog.dto.SignupRequestDto;
 import com.sparta.myblog.entity.StatusEnum;
 import com.sparta.myblog.entity.UserRoleEnum;
-import com.sparta.myblog.entity.Users;
+import com.sparta.myblog.entity.User;
 import com.sparta.myblog.exception.CustomException;
 import com.sparta.myblog.exception.ErrorCode;
 import com.sparta.myblog.jwt.JwtUtil;
@@ -13,6 +13,7 @@ import com.sparta.myblog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,26 +26,30 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     //회원가입
     @Transactional
     public ResponseEntity<MessageDto> signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
+        String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
         // 회원 중복 확인
-        Optional<Users> found = userRepository.findByUsername(username);
+        Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_IDENTIFIER);
         }
         // 회원 Role 확인
+        UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
                 throw new CustomException(ErrorCode.INCORRECT_ADMIN_KEY);
             }
-            signupRequestDto.setRole(UserRoleEnum.ADMIN);
+            role = UserRoleEnum.ADMIN;
         }
-        Users user = new Users(signupRequestDto);
+        User user = new User(username, password, role);
         userRepository.save(user);
         MessageDto messageDto = MessageDto.setSuccess(StatusEnum.OK.getStatusCode(), "회원가입 완료", null);
         return new ResponseEntity(messageDto, HttpStatus.OK);
@@ -56,11 +61,11 @@ public class UserService {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
-        Users user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if(!user.getPassword().equals(password)){
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
         MessageDto messageDto = MessageDto.setSuccess(StatusEnum.OK.getStatusCode(), "사용자 로그인 완료", null);
