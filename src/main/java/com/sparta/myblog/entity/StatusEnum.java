@@ -8,17 +8,13 @@ public enum StatusEnum {
     INTERNAL_SERER_ERROR(500, "INTERNAL_SERVER_ERROR");
 
     int statusCode;
-    String code;
+    String message;
 
-    StatusEnum(int statusCode, String code) {
+    StatusEnum(int statusCode, String message) {
         this.statusCode = statusCode;
-        this.code = code;
+        this.message = message;
     }
     public int getStatusCode() {
         return statusCode;
-    }
-
-    public String getCode() {
-        return code;
     }
 }

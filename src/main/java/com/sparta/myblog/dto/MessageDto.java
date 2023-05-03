@@ -15,8 +15,4 @@ public class MessageDto<T> {
     public static <T> MessageDto<T> setSuccess(int statusCode, String message, T data){
         return new MessageDto<>(statusCode, message, data);
     }
-
-    public static <T> MessageDto<T> setFail(int statusCode, String message){
-        return new MessageDto<>(statusCode, message, null);
-    }
 }

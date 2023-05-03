@@ -1,5 +1,6 @@
 package com.sparta.myblog.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sparta.myblog.dto.ReplyRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,11 +17,12 @@ public class Reply extends Timestamped {
     private Long id;
     @Column(nullable = false)
     private String contents;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     private Post post;
 
     public Reply(ReplyRequestDto requestDto, User user, Post post) {
