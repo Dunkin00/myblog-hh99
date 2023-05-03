@@ -19,6 +19,7 @@ public class PostResponseDto {
     private String contents;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int likeCount;
     private List<ReplyResponseDto> replyList = new ArrayList<>();
 
     public PostResponseDto(Post post){
@@ -28,6 +29,7 @@ public class PostResponseDto {
         this.contents = post.getContents();
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
+        this.likeCount = post.getLikeCount();
         this.replyList = post.getReplyList()
                 .stream().map(ReplyResponseDto::new)
                 .collect(Collectors.toList());

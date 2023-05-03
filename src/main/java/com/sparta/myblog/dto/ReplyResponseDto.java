@@ -14,6 +14,7 @@ public class ReplyResponseDto {
     private String username;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private int likeCount;
 
     public ReplyResponseDto(Reply reply){
         this.id = reply.getId();
@@ -21,5 +22,6 @@ public class ReplyResponseDto {
         this.username = reply.getUser().getUsername();
         this.createdAt = reply.getCreatedAt();
         this.modifiedAt = reply.getModifiedAt();
+        this.likeCount = reply.getLikeCount();
     }
 }
