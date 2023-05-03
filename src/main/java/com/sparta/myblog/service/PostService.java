@@ -4,10 +4,10 @@ import com.sparta.myblog.dto.ResponseDto;
 import com.sparta.myblog.dto.PostRequestDto;
 import com.sparta.myblog.dto.PostResponseDto;
 import com.sparta.myblog.entity.Post;
+import com.sparta.myblog.entity.StatusEnum;
 import com.sparta.myblog.entity.UserRoleEnum;
 import com.sparta.myblog.entity.User;
 import com.sparta.myblog.exception.CustomException;
-import com.sparta.myblog.exception.ErrorCode;
 import com.sparta.myblog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,13 +69,13 @@ public class PostService {
     //게시글 확인
     public Post findPostById(Long id){
         return postRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.POST_NOT_FOUND));
+                () -> new CustomException(StatusEnum.POST_NOT_FOUND));
     }
 
     //작성자 게시물 확인
     public void isUsersPost(User user, Post post){
         if (!post.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorCode.NOT_AUTHORIZED_USER);
+            throw new CustomException(StatusEnum.NOT_AUTHORIZED_USER);
         }
     }
 }

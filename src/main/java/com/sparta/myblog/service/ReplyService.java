@@ -5,7 +5,6 @@ import com.sparta.myblog.dto.ReplyResponseDto;
 import com.sparta.myblog.dto.ReplyRequestDto;
 import com.sparta.myblog.entity.*;
 import com.sparta.myblog.exception.CustomException;
-import com.sparta.myblog.exception.ErrorCode;
 import com.sparta.myblog.repository.PostRepository;
 import com.sparta.myblog.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +51,7 @@ public class ReplyService {
     //게시글 확인
     public Post findPostById(Long id){
         return postRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.POST_NOT_FOUND));
+                () -> new CustomException(StatusEnum.POST_NOT_FOUND));
     }
     //댓글 확인
     public Reply findReplyById(Long id){
@@ -62,7 +61,7 @@ public class ReplyService {
     //댓글 주인 확인
     public void isUserReply(User user, Reply reply){
         if (!reply.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorCode.NOT_AUTHORIZED_USER);
+            throw new CustomException(StatusEnum.NOT_AUTHORIZED_USER);
         }
     }
 }

@@ -11,9 +11,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(final CustomException e) {
-        log.error("handleCustomException: {}", e.getErrorCode());
+        log.error("handleCustomException: {}", e.getStatusEnum());
         return ResponseEntity
-                .status(e.getErrorCode().getStatus().value())
-                .body(new ErrorResponse(e.getErrorCode()));
+                .status(e.getStatusEnum().getStatus().value())
+                .body(new ErrorResponse(e.getStatusEnum()));
     }
 }

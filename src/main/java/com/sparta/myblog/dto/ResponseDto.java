@@ -1,8 +1,10 @@
 package com.sparta.myblog.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sparta.myblog.entity.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor

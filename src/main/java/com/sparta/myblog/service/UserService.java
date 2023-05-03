@@ -3,10 +3,10 @@ package com.sparta.myblog.service;
 import com.sparta.myblog.dto.LoginRequestDto;
 import com.sparta.myblog.dto.ResponseDto;
 import com.sparta.myblog.dto.SignupRequestDto;
+import com.sparta.myblog.entity.StatusEnum;
 import com.sparta.myblog.entity.UserRoleEnum;
 import com.sparta.myblog.entity.User;
 import com.sparta.myblog.exception.CustomException;
-import com.sparta.myblog.exception.ErrorCode;
 import com.sparta.myblog.jwt.JwtUtil;
 import com.sparta.myblog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +38,13 @@ public class UserService {
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATE_IDENTIFIER);
+            throw new CustomException(StatusEnum.DUPLICATE_IDENTIFIER);
         }
         // 회원 Role 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                throw new CustomException(ErrorCode.INCORRECT_ADMIN_KEY);
+                throw new CustomException(StatusEnum.INCORRECT_ADMIN_KEY);
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -60,7 +60,7 @@ public class UserService {
         String password = loginRequestDto.getPassword();
 
         User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                () -> new CustomException(StatusEnum.USER_NOT_FOUND));
 
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
