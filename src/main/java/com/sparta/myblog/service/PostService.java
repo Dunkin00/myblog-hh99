@@ -1,18 +1,15 @@
 package com.sparta.myblog.service;
 
-import com.sparta.myblog.dto.MessageDto;
+import com.sparta.myblog.dto.ResponseDto;
 import com.sparta.myblog.dto.PostRequestDto;
 import com.sparta.myblog.dto.PostResponseDto;
 import com.sparta.myblog.entity.Post;
-import com.sparta.myblog.entity.StatusEnum;
 import com.sparta.myblog.entity.UserRoleEnum;
 import com.sparta.myblog.entity.User;
 import com.sparta.myblog.exception.CustomException;
 import com.sparta.myblog.exception.ErrorCode;
 import com.sparta.myblog.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,43 +24,46 @@ public class PostService {
 
     //게시글 목록 조회
     @Transactional(readOnly = true)
-    public List<PostResponseDto> getList() {
-        return postRepository.findAllByOrderByCreatedAtDesc().stream()
+    public ResponseDto<?> getList() {
+        List<PostResponseDto> postList = postRepository.findAllByOrderByCreatedAtDesc().stream()
                 .map(PostResponseDto::new).collect(Collectors.toList());
+        return ResponseDto.setSuccess("게시글 목록 조회", postList);
     }
 
     //선택한 게시글 조회
     @Transactional(readOnly = true)
-    public PostResponseDto getPost(Long id){
+    public ResponseDto<?> getPost(Long id){
         Post post = findPostById(id);
-        return new PostResponseDto(post);
+        PostResponseDto postResponseDto = new PostResponseDto(post);
+        return ResponseDto.setSuccess("선택한 게시글 조회", postResponseDto);
     }
 
     //게시글 등록
-    public PostResponseDto createPost(PostRequestDto requestDto, User user) {
+    public ResponseDto<?> createPost(PostRequestDto requestDto, User user) {
         Post post = new Post(requestDto, user);
-        return new PostResponseDto(postRepository.save(post));
+        PostResponseDto postResponseDto = new PostResponseDto(postRepository.save(post));
+        return ResponseDto.setSuccess("게시글 등록 성공", postResponseDto);
     }
 
     //게시글 수정
-    public PostResponseDto update(Long id, PostRequestDto requestDto, User user) {
+    public ResponseDto<?> update(Long id, PostRequestDto requestDto, User user) {
         Post post = findPostById(id);
         if (user.getRole().equals(UserRoleEnum.USER)) {
             isUsersPost(user,post);
         }
         post.update(requestDto);
-        return new PostResponseDto(post);
+        PostResponseDto postResponseDto = new PostResponseDto(post);
+        return ResponseDto.setSuccess("게시글 수정 성공", postResponseDto);
     }
 
     //게시글 삭제
-    public ResponseEntity<MessageDto> deletePost(Long id, User user) {
+    public ResponseDto<?> deletePost(Long id, User user) {
         Post post = findPostById(id);
         if (user.getRole().equals(UserRoleEnum.USER)) {
             isUsersPost(user,post);
         }
         postRepository.deleteById(id);
-        MessageDto messageDto = MessageDto.setSuccess(StatusEnum.OK.getStatusCode(), "게시글 삭제 완료", null);
-        return new ResponseEntity(messageDto, HttpStatus.OK);
+        return ResponseDto.setSuccess("게시글 삭제 완료", null);
     }
 
     //게시글 확인

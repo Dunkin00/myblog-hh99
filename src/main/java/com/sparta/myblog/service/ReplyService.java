@@ -1,6 +1,6 @@
 package com.sparta.myblog.service;
 
-import com.sparta.myblog.dto.MessageDto;
+import com.sparta.myblog.dto.ResponseDto;
 import com.sparta.myblog.dto.ReplyResponseDto;
 import com.sparta.myblog.dto.ReplyRequestDto;
 import com.sparta.myblog.entity.*;
@@ -9,8 +9,6 @@ import com.sparta.myblog.exception.ErrorCode;
 import com.sparta.myblog.repository.PostRepository;
 import com.sparta.myblog.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,31 +20,33 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
 
     //댓글 작성
-    public ReplyResponseDto createReply(Long postId, ReplyRequestDto requestDto, User user) {
+    public ResponseDto<?> createReply(Long postId, ReplyRequestDto requestDto, User user) {
         Post post = findPostById(postId);
         Reply reply = new Reply(requestDto, user, post);
-        return new ReplyResponseDto(replyRepository.save(reply));
+        replyRepository.save(reply);
+        ReplyResponseDto replyResponseDto = new ReplyResponseDto(reply);
+        return ResponseDto.setSuccess("댓글 작성 완료", replyResponseDto);
     }
 
     //댓글 수정
-    public ReplyResponseDto updateReply(Long replyId, ReplyRequestDto requestDto, User user){
+    public ResponseDto<?> updateReply(Long replyId, ReplyRequestDto requestDto, User user){
         Reply reply = findReplyById(replyId);
         if (user.getRole().equals(UserRoleEnum.USER)){
             isUserReply(user,reply);
         }
         reply.update(requestDto, user);
-        return new ReplyResponseDto(reply);
+        ReplyResponseDto replyResponseDto = new ReplyResponseDto(reply);
+        return ResponseDto.setSuccess("댓글 수정 완료", replyResponseDto);
     }
 
     //댓글 삭제
-    public ResponseEntity<MessageDto> deleteReply(Long replyId, User user){
+    public ResponseDto<?> deleteReply(Long replyId, User user){
         Reply reply = findReplyById(replyId);
         if (user.getRole().equals(UserRoleEnum.USER)){
             isUserReply(user,reply);
         }
         replyRepository.delete(reply);
-        MessageDto messageDto = MessageDto.setSuccess(StatusEnum.OK.getStatusCode(), "댓글 삭제 완료", null);
-        return new ResponseEntity(messageDto, HttpStatus.OK);
+        return ResponseDto.setSuccess("댓글 삭제 완료", null);
     }
 
     //게시글 확인
@@ -54,7 +54,6 @@ public class ReplyService {
         return postRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.POST_NOT_FOUND));
     }
-
     //댓글 확인
     public Reply findReplyById(Long id){
         return replyRepository.findById(id).orElseThrow(

@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MessageDto<T> {
+public class ResponseDto<T> {
     private int statusCode;
     private String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
-    public static <T> MessageDto<T> setSuccess(int statusCode, String message, T data){
-        return new MessageDto<>(statusCode, message, data);
+    public static <T> ResponseDto<T> setSuccess(String message, T data){
+        return new ResponseDto<>(200, message, data);
     }
 }

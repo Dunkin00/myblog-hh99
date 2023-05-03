@@ -1,6 +1,7 @@
 package com.sparta.myblog.controller;
 
 import com.sparta.myblog.dto.LoginRequestDto;
+import com.sparta.myblog.dto.ResponseDto;
 import com.sparta.myblog.dto.SignupRequestDto;
 import com.sparta.myblog.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@Valid @RequestBody SignupRequestDto signupRequestDto){
+    public ResponseDto<?> signup(@Valid @RequestBody SignupRequestDto signupRequestDto){
         return userService.signup(signupRequestDto);
     }
 
     @ResponseBody
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
+    public ResponseDto<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response){
         return userService.login(loginRequestDto, response);
     }
 }

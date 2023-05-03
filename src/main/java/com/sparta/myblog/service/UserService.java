@@ -1,9 +1,8 @@
 package com.sparta.myblog.service;
 
 import com.sparta.myblog.dto.LoginRequestDto;
-import com.sparta.myblog.dto.MessageDto;
+import com.sparta.myblog.dto.ResponseDto;
 import com.sparta.myblog.dto.SignupRequestDto;
-import com.sparta.myblog.entity.StatusEnum;
 import com.sparta.myblog.entity.UserRoleEnum;
 import com.sparta.myblog.entity.User;
 import com.sparta.myblog.exception.CustomException;
@@ -12,8 +11,6 @@ import com.sparta.myblog.jwt.JwtUtil;
 import com.sparta.myblog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +31,7 @@ public class UserService {
 
     //회원가입
     @Transactional
-    public ResponseEntity<MessageDto> signup(SignupRequestDto signupRequestDto) {
+    public ResponseDto<?> signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
 
@@ -53,13 +50,12 @@ public class UserService {
         }
         User user = new User(username, password, role);
         userRepository.save(user);
-        MessageDto messageDto = MessageDto.setSuccess(StatusEnum.OK.getStatusCode(), "회원가입 완료", null);
-        return new ResponseEntity(messageDto, HttpStatus.OK);
+        return ResponseDto.setSuccess("회원가입 완료", null);
     }
 
     //로그인
     @Transactional
-    public ResponseEntity<MessageDto> login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseDto<?> login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -70,10 +66,10 @@ public class UserService {
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
-        MessageDto messageDto = MessageDto.setSuccess(StatusEnum.OK.getStatusCode(), "사용자 로그인 완료", null);
+        ResponseDto<?> responseDto = ResponseDto.setSuccess("사용자 로그인 완료", null);
         if(user.getRole().equals(UserRoleEnum.ADMIN)){
-            messageDto = MessageDto.setSuccess(StatusEnum.OK.getStatusCode(), "관리자 로그인 완료", null);
+            responseDto = ResponseDto.setSuccess("관리자 로그인 완료", null);
         }
-        return new ResponseEntity(messageDto, HttpStatus.OK);
+        return responseDto;
     }
 }
