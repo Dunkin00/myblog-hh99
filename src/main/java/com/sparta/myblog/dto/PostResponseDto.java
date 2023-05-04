@@ -1,7 +1,6 @@
 package com.sparta.myblog.dto;
 
 import com.sparta.myblog.entity.Post;
-import com.sparta.myblog.entity.Reply;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
